@@ -1,6 +1,5 @@
 package com.darkube.silentScheduler.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -17,8 +16,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.AlarmOff
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FabPosition
@@ -29,8 +28,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -52,7 +49,6 @@ import com.darkube.silentScheduler.ui.components.SpeakerAnimation
 import com.darkube.silentScheduler.R
 import com.darkube.silentScheduler.ui.components.NewSchedule
 import com.darkube.silentScheduler.viewmodels.MainViewModel
-import kotlinx.coroutines.flow.asStateFlow
 
 data class TimeRange(val start: String, val end: String)
 
@@ -208,11 +204,14 @@ fun GlassCard(topMargin: Dp = 0.dp, start: String, end: String) {
                 fontSize = 17.sp,
             )
             Spacer(modifier = Modifier.height(10.dp))
-            Row {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Icon(
-                    imageVector = Icons.Default.DateRange,
+                    imageVector = Icons.Default.AlarmOff,
                     contentDescription = "Time Symbol",
                     tint = Color.White,
+                    modifier = Modifier.height(15.dp),
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
@@ -242,7 +241,7 @@ fun BottomButton(
         ),
     ) {
         Icon(
-            imageVector = Icons.Default.Add,
+            imageVector = Icons.Default.AccessTime,
             contentDescription = "Add Schedule",
             modifier = modifier.size(40.dp),
         )
