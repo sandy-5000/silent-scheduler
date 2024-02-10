@@ -2,6 +2,7 @@ package com.darkube.silentScheduler.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,8 +17,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccessTime
-import androidx.compose.material.icons.filled.AlarmOff
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FabPosition
@@ -48,6 +50,7 @@ import com.darkube.silentScheduler.ui.components.SilentAnimation
 import com.darkube.silentScheduler.ui.components.SpeakerAnimation
 import com.darkube.silentScheduler.R
 import com.darkube.silentScheduler.ui.components.NewSchedule
+import com.darkube.silentScheduler.ui.icons.svgIcon
 import com.darkube.silentScheduler.viewmodels.MainViewModel
 
 data class TimeRange(val start: String, val end: String)
@@ -105,18 +108,18 @@ fun HomeScreen(
                             painter = painterResource(id = R.drawable.back_ground),
                             contentDescription = "Background Image",
                             contentScale = ContentScale.FillWidth,
-                            modifier = Modifier
+                            modifier = modifier
                                 .matchParentSize()
                                 .alpha(0.2f),
                         )
                         Column(
-                            modifier = Modifier
+                            modifier = modifier
                                 .padding(horizontal = 16.dp)
                                 .matchParentSize()
 
                         ) {
                             SilenceSchedule()
-                            if(viewModel.openDialog) {
+                            if (viewModel.openDialog) {
                                 NewSchedule(viewModel)
                             }
                         }
@@ -166,24 +169,30 @@ fun SilenceSchedule() {
 }
 
 @Composable
-fun GlassCard(topMargin: Dp = 0.dp, start: String, end: String) {
+fun GlassCard(
+    modifier: Modifier = Modifier,
+    silentMessage: String = "Silent Hours",
+    topMargin: Dp = 0.dp,
+    start: String,
+    end: String,
+) {
     val ptSansFontFamily = FontFamily(
         Font(R.font.ptsans_regular, FontWeight.Normal),
     )
     Box(
-        modifier = Modifier
+        modifier = modifier
             .padding(top = topMargin, bottom = 16.dp)
             .fillMaxWidth()
             .height(160.dp)
             .clip(shape = RoundedCornerShape(size = 20.dp))
     ) {
         Box(
-            modifier = Modifier
+            modifier = modifier
                 .matchParentSize()
                 .background(
                     brush = Brush.linearGradient(
                         colors = listOf(
-                            Color(0xFFffffff).copy(alpha = 0.025f),
+                            Color(0xFFffffff).copy(alpha = 0.05f),
                             Color(0xFFffffff).copy(alpha = 0.1f),
                         )
                     )
@@ -193,33 +202,70 @@ fun GlassCard(topMargin: Dp = 0.dp, start: String, end: String) {
         ) {
         }
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .padding(horizontal = 12.dp, vertical = 16.dp)
                 .matchParentSize(),
+            verticalArrangement = Arrangement.SpaceBetween,
         ) {
-            Text(
-                text = "Scheduled",
-                color = Color.White,
-                fontFamily = ptSansFontFamily,
-                fontSize = 17.sp,
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = modifier
+                    .fillMaxWidth()
             ) {
-                Icon(
-                    imageVector = Icons.Default.AlarmOff,
-                    contentDescription = "Time Symbol",
-                    tint = Color.White,
-                    modifier = Modifier.height(15.dp),
-                )
-                Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = "Time: $start - $end",
+                    text = "Scheduled",
                     color = Color.White,
                     fontFamily = ptSansFontFamily,
-                    fontSize = 15.sp,
+                    fontSize = 17.sp,
                 )
+                Spacer(modifier = modifier.height(10.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.DateRange,
+                        contentDescription = "Time Symbol",
+                        tint = Color.White,
+                        modifier = modifier.height(15.dp),
+                    )
+                    Spacer(modifier = modifier.width(4.dp))
+                    Text(
+                        text = "Time: $start - $end",
+                        color = Color.White,
+                        fontFamily = ptSansFontFamily,
+                        fontSize = 15.sp,
+                    )
+                }
+            }
+            Row(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 5.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    text = "Desc: $silentMessage",
+                    color = Color.White,
+                    fontFamily = ptSansFontFamily,
+                    fontSize = 18.sp,
+                )
+                FilledTonalIconButton(
+                    onClick = { },
+                    modifier = modifier
+                        .padding(end = 8.dp)
+                        .size(35.dp),
+                    colors = IconButtonDefaults.filledTonalIconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.background,
+                        contentColor = MaterialTheme.colorScheme.background
+                    ),
+                    shape = RoundedCornerShape(size = 10.dp)
+                ) {
+                    Icon(
+                        painterResource(id = R.drawable.trash_bin),
+                        contentDescription = "Time Symbol",
+                        tint = Color.White,
+                    )
+                }
             }
         }
     }
@@ -232,7 +278,7 @@ fun BottomButton(
 ) {
     FilledTonalIconButton(
         onClick = { viewModel.openDialogStatus() },
-        modifier = Modifier
+        modifier = modifier
             .padding(all = 15.dp)
             .size(50.dp),
         colors = IconButtonDefaults.filledTonalIconButtonColors(
@@ -241,7 +287,7 @@ fun BottomButton(
         ),
     ) {
         Icon(
-            imageVector = Icons.Default.AccessTime,
+            imageVector = Icons.Rounded.Add,
             contentDescription = "Add Schedule",
             modifier = modifier.size(40.dp),
         )

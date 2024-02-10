@@ -25,14 +25,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.DefaultShadowColor
 import androidx.compose.ui.unit.dp
 import com.darkube.silentScheduler.viewmodels.MainViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewSchedule(viewModel: MainViewModel) {
+fun NewSchedule(
+    viewModel: MainViewModel,
+    modifier: Modifier = Modifier,
+) {
     val timePickerStateHorizontal = rememberTimePickerState()
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
@@ -41,11 +43,11 @@ fun NewSchedule(viewModel: MainViewModel) {
         sheetState = sheetState,
         onDismissRequest = { viewModel.closeDialogStatus() },
         containerColor = Color.Transparent,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxHeight()
     ) {
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .background(
                     color = MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
@@ -57,7 +59,7 @@ fun NewSchedule(viewModel: MainViewModel) {
         ) {
             TimeInput(state = timePickerStateHorizontal)
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 Button(
@@ -67,10 +69,11 @@ fun NewSchedule(viewModel: MainViewModel) {
                     colors = ButtonDefaults.textButtonColors(
                         containerColor = MaterialTheme.colorScheme.tertiary,
                     ),
+                    shape = RoundedCornerShape(size = 10.dp),
                 ) {
                     Text(
                         text = "Save",
-                        color = MaterialTheme.colorScheme.background
+                        color = MaterialTheme.colorScheme.background,
                     )
                 }
                 Button(
@@ -78,14 +81,22 @@ fun NewSchedule(viewModel: MainViewModel) {
                         viewModel.closeDialogStatus()
                     },
                     colors = ButtonDefaults.textButtonColors(
-                        containerColor = MaterialTheme.colorScheme.tertiary,
+                        containerColor = Color(0xFFf43f5e),
                     ),
+                    shape = RoundedCornerShape(size = 10.dp),
                 ) {
                     Text(
                         text = "Close",
-                        color = MaterialTheme.colorScheme.background
+                        color = Color.White,
+//                        color = MaterialTheme.colorScheme.background,
                     )
                 }
+            }
+            Column(
+                modifier = modifier
+                    .fillMaxWidth()
+            ) {
+
             }
         }
     }
