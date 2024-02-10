@@ -24,7 +24,9 @@ import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.darkube.silentScheduler.viewmodels.MainViewModel
 
@@ -57,6 +59,68 @@ fun NewSchedule(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
+            Column(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(5.dp)
+                        .clip(shape = RoundedCornerShape(size = 16.dp))
+                        .background(color = Color(0xFF1e293b))
+                        .padding(horizontal =  16.dp, vertical = 5.dp),
+                ) {
+                    Text(
+                        text = "Start Time : 09:00am",
+                        color = Color.White,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                    Button(
+                        onClick = { },
+                        colors = ButtonDefaults.textButtonColors(
+                            containerColor = MaterialTheme.colorScheme.tertiary,
+                        ),
+                        shape = RoundedCornerShape(size = 10.dp),
+                    ) {
+                        Text(
+                            text = "Change",
+                            color = MaterialTheme.colorScheme.background,
+                        )
+                    }
+                }
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = modifier
+                        .fillMaxWidth()
+                        .padding(5.dp)
+                        .clip(shape = RoundedCornerShape(size = 16.dp))
+                        .background(color = Color(0xFF1e293b))
+                        .padding(horizontal =  16.dp, vertical = 5.dp),
+                ) {
+                    Text(
+                        text = "End Time   : 09:30am",
+                        color = Color.White,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                    Button(
+                        onClick = { },
+                        colors = ButtonDefaults.textButtonColors(
+                            containerColor = MaterialTheme.colorScheme.tertiary,
+                        ),
+                        shape = RoundedCornerShape(size = 10.dp),
+                    ) {
+                        Text(
+                            text = "Change",
+                            color = MaterialTheme.colorScheme.background,
+                        )
+                    }
+                }
+            }
             TimeInput(state = timePickerStateHorizontal)
             Row(
                 modifier = modifier.fillMaxWidth(),
@@ -88,7 +152,6 @@ fun NewSchedule(
                     Text(
                         text = "Close",
                         color = Color.White,
-//                        color = MaterialTheme.colorScheme.background,
                     )
                 }
             }

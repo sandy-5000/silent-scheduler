@@ -19,7 +19,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FabPosition
@@ -49,11 +48,11 @@ import com.darkube.silentScheduler.ui.components.LoadingAnimation
 import com.darkube.silentScheduler.ui.components.SilentAnimation
 import com.darkube.silentScheduler.ui.components.SpeakerAnimation
 import com.darkube.silentScheduler.R
+import com.darkube.silentScheduler.types.Time
+import com.darkube.silentScheduler.types.TimePeriod
+import com.darkube.silentScheduler.types.TimeRange
 import com.darkube.silentScheduler.ui.components.NewSchedule
-import com.darkube.silentScheduler.ui.icons.svgIcon
 import com.darkube.silentScheduler.viewmodels.MainViewModel
-
-data class TimeRange(val start: String, val end: String)
 
 @Composable
 fun HomeScreen(
@@ -144,24 +143,43 @@ fun GetCurrentStatusAnimation() {
 fun SilenceSchedule() {
     val isLoading = false
     val schedules = mutableListOf(
-        TimeRange(start = "09:00am", end = "09:30am"),
-        TimeRange(start = "10:00am", end = "10:30am"),
-        TimeRange(start = "11:00am", end = "11:45am"),
-        TimeRange(start = "12:00pm", end = "12:40pm"),
-        TimeRange(start = "02:00pm", end = "02:40pm"),
-        TimeRange(start = "03:00pm", end = "03:35pm"),
-        TimeRange(start = "04:10pm", end = "04:35pm"),
-        TimeRange(start = "05:15pm", end = "06:00pm"),
+        TimeRange(
+            start = Time(hours = 9, minutes = 0, period = TimePeriod.AM),
+            end = Time(hours = 9, minutes = 30, period = TimePeriod.AM),
+        ),
+        TimeRange(
+            start = Time(hours = 10, minutes = 0, period = TimePeriod.AM),
+            end = Time(hours = 10, minutes = 30, period = TimePeriod.AM),
+        ),
+        TimeRange(
+            start = Time(hours = 11, minutes = 0, period = TimePeriod.AM),
+            end = Time(hours = 11, minutes = 45, period = TimePeriod.AM),
+        ),
+        TimeRange(
+            start = Time(hours = 12, minutes = 0, period = TimePeriod.AM),
+            end = Time(hours = 12, minutes = 40, period = TimePeriod.AM),
+        ),
+        TimeRange(
+            start = Time(hours = 2, minutes = 0, period = TimePeriod.PM),
+            end = Time(hours = 3, minutes = 35, period = TimePeriod.PM),
+        ),
+        TimeRange(
+            start = Time(hours = 4, minutes = 10, period = TimePeriod.PM),
+            end = Time(hours = 4, minutes = 35, period = TimePeriod.PM),
+        ),
+        TimeRange(
+            start = Time(hours = 5, minutes = 15, period = TimePeriod.PM),
+            end = Time(hours = 6, minutes = 0, period = TimePeriod.PM),
+        ),
     )
     if (isLoading) {
         LoadingAnimation()
     } else {
         LazyColumn {
-            itemsIndexed(schedules) { index, schedule ->
+            itemsIndexed(schedules) { index, timeRange ->
                 GlassCard(
                     topMargin = if (index == 0) 16.dp else 0.dp,
-                    start = schedule.start,
-                    end = schedule.end,
+                    timeRange = timeRange,
                 )
             }
         }
@@ -171,10 +189,8 @@ fun SilenceSchedule() {
 @Composable
 fun GlassCard(
     modifier: Modifier = Modifier,
-    silentMessage: String = "Silent Hours",
     topMargin: Dp = 0.dp,
-    start: String,
-    end: String,
+    timeRange: TimeRange,
 ) {
     val ptSansFontFamily = FontFamily(
         Font(R.font.ptsans_regular, FontWeight.Normal),
@@ -229,7 +245,7 @@ fun GlassCard(
                     )
                     Spacer(modifier = modifier.width(4.dp))
                     Text(
-                        text = "Time: $start - $end",
+                        text = "Time: $timeRange",
                         color = Color.White,
                         fontFamily = ptSansFontFamily,
                         fontSize = 15.sp,
@@ -244,10 +260,10 @@ fun GlassCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
-                    text = "Desc: $silentMessage",
+                    text = "Duration: ${timeRange.durationToString()}",
                     color = Color.White,
                     fontFamily = ptSansFontFamily,
-                    fontSize = 18.sp,
+                    fontSize = 17.sp,
                 )
                 FilledTonalIconButton(
                     onClick = { },
@@ -279,7 +295,7 @@ fun BottomButton(
     FilledTonalIconButton(
         onClick = { viewModel.openDialogStatus() },
         modifier = modifier
-            .padding(all = 15.dp)
+            .padding(horizontal = 10.dp)
             .size(50.dp),
         colors = IconButtonDefaults.filledTonalIconButtonColors(
             containerColor = MaterialTheme.colorScheme.secondary,
