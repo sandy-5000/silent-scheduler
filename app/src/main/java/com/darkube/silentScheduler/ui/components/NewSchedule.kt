@@ -22,12 +22,20 @@ import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.darkube.silentScheduler.types.Time
+import com.darkube.silentScheduler.types.Time24
+import com.darkube.silentScheduler.types.TimePeriod
+import com.darkube.silentScheduler.types.TimeRange
 import com.darkube.silentScheduler.viewmodels.MainViewModel
 
 
@@ -37,10 +45,24 @@ fun NewSchedule(
     viewModel: MainViewModel,
     modifier: Modifier = Modifier,
 ) {
-    val timePickerStateHorizontal = rememberTimePickerState()
+    val timeState = rememberTimePickerState()
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
     )
+    var startTimeChange by remember {
+        mutableStateOf(true)
+    }
+    var endTimeChange by remember {
+        mutableStateOf(true)
+    }
+    val timeRange by remember {
+        mutableStateOf(
+            TimeRange(
+                start = Time(hours = 9, minutes = 0, period = TimePeriod.AM),
+                end = Time(hours = 9, minutes = 30, period = TimePeriod.AM),
+            )
+        )
+    }
     ModalBottomSheet(
         sheetState = sheetState,
         onDismissRequest = { viewModel.closeDialogStatus() },
@@ -72,24 +94,58 @@ fun NewSchedule(
                         .padding(5.dp)
                         .clip(shape = RoundedCornerShape(size = 16.dp))
                         .background(color = Color(0xFF1e293b))
-                        .padding(horizontal =  16.dp, vertical = 5.dp),
+                        .padding(horizontal = 16.dp, vertical = 5.dp),
                 ) {
-                    Text(
-                        text = "Start Time : 09:00am",
-                        color = Color.White,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                    Button(
-                        onClick = { },
-                        colors = ButtonDefaults.textButtonColors(
-                            containerColor = MaterialTheme.colorScheme.tertiary,
-                        ),
-                        shape = RoundedCornerShape(size = 10.dp),
-                    ) {
+                    if (startTimeChange) {
                         Text(
-                            text = "Change",
-                            color = MaterialTheme.colorScheme.background,
+                            text = "Start Time : ${timeRange.start}",
+                            color = Color.White,
+                            fontWeight = FontWeight.SemiBold,
                         )
+                        Button(
+                            onClick = {
+                                endTimeChange = true
+                                startTimeChange = false
+                            },
+                            colors = ButtonDefaults.textButtonColors(
+                                containerColor = MaterialTheme.colorScheme.tertiary,
+                            ),
+                            shape = RoundedCornerShape(size = 10.dp),
+                        ) {
+                            Text(
+                                text = "Change",
+                                color = MaterialTheme.colorScheme.background,
+                            )
+                        }
+                    } else {
+                        Text(
+                            text = "Start Time : ${
+                                Time24(
+                                    hours = timeState.hour,
+                                    minutes = timeState.minute,
+                                )
+                            }",
+                            color = Color.White,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                        Button(
+                            onClick = {
+                                timeRange.start = Time24(
+                                    hours = timeState.hour,
+                                    minutes = timeState.minute,
+                                ).get12Hours()
+                                startTimeChange = true
+                            },
+                            colors = ButtonDefaults.textButtonColors(
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                            ),
+                            shape = RoundedCornerShape(size = 10.dp),
+                        ) {
+                            Text(
+                                text = "Confirm",
+                                color = MaterialTheme.colorScheme.background,
+                            )
+                        }
                     }
                 }
                 Row(
@@ -100,34 +156,74 @@ fun NewSchedule(
                         .padding(5.dp)
                         .clip(shape = RoundedCornerShape(size = 16.dp))
                         .background(color = Color(0xFF1e293b))
-                        .padding(horizontal =  16.dp, vertical = 5.dp),
+                        .padding(horizontal = 16.dp, vertical = 5.dp),
                 ) {
-                    Text(
-                        text = "End Time   : 09:30am",
-                        color = Color.White,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                    Button(
-                        onClick = { },
-                        colors = ButtonDefaults.textButtonColors(
-                            containerColor = MaterialTheme.colorScheme.tertiary,
-                        ),
-                        shape = RoundedCornerShape(size = 10.dp),
-                    ) {
+                    if (endTimeChange) {
                         Text(
-                            text = "Change",
-                            color = MaterialTheme.colorScheme.background,
+                            text = "End Time   : ${timeRange.end}",
+                            color = Color.White,
+                            fontWeight = FontWeight.SemiBold,
                         )
+                        Button(
+                            onClick = {
+                                startTimeChange = true
+                                endTimeChange = false
+                            },
+                            colors = ButtonDefaults.textButtonColors(
+                                containerColor = MaterialTheme.colorScheme.tertiary,
+                            ),
+                            shape = RoundedCornerShape(size = 10.dp),
+                        ) {
+                            Text(
+                                text = "Change",
+                                color = MaterialTheme.colorScheme.background,
+                            )
+                        }
+                    } else {
+                        Text(
+                            text = "End Time   : ${
+                                Time24(
+                                    hours = timeState.hour,
+                                    minutes = timeState.minute,
+                                )
+                            }",
+                            color = Color.White,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                        Button(
+                            onClick = {
+                                timeRange.end = Time24(
+                                    hours = timeState.hour,
+                                    minutes = timeState.minute,
+                                ).get12Hours()
+                                endTimeChange = true
+                            },
+                            colors = ButtonDefaults.textButtonColors(
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                            ),
+                            shape = RoundedCornerShape(size = 10.dp),
+                        ) {
+                            Text(
+                                text = "Confirm",
+                                color = MaterialTheme.colorScheme.background,
+                            )
+                        }
                     }
                 }
             }
-            TimeInput(state = timePickerStateHorizontal)
+            TimeInput(state = timeState)
             Row(
                 modifier = modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
                 Button(
                     onClick = {
+                        if (!startTimeChange || !endTimeChange) {
+                            return@Button
+                        }
+                        if (!timeRange.isValid()) {
+                            return@Button
+                        }
                         viewModel.closeDialogStatus()
                     },
                     colors = ButtonDefaults.textButtonColors(
@@ -154,12 +250,6 @@ fun NewSchedule(
                         color = Color.White,
                     )
                 }
-            }
-            Column(
-                modifier = modifier
-                    .fillMaxWidth()
-            ) {
-
             }
         }
     }

@@ -17,7 +17,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -238,10 +237,11 @@ fun GlassCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = Icons.Default.DateRange,
+                        painterResource(id = R.drawable.sound_off),
                         contentDescription = "Time Symbol",
                         tint = Color.White,
-                        modifier = modifier.height(15.dp),
+                        modifier = modifier
+                            .height(15.dp)
                     )
                     Spacer(modifier = modifier.width(4.dp))
                     Text(
