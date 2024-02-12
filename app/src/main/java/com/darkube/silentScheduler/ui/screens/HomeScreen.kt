@@ -47,6 +47,7 @@ import com.darkube.silentScheduler.ui.components.LoadingAnimation
 import com.darkube.silentScheduler.ui.components.SilentAnimation
 import com.darkube.silentScheduler.ui.components.SpeakerAnimation
 import com.darkube.silentScheduler.R
+import com.darkube.silentScheduler.types.AudioMode
 import com.darkube.silentScheduler.types.Time
 import com.darkube.silentScheduler.types.TimePeriod
 import com.darkube.silentScheduler.types.TimeRange
@@ -59,7 +60,9 @@ fun HomeScreen(
     viewModel: MainViewModel = MainViewModel(),
 ) {
     Scaffold(
-        floatingActionButton = { BottomButton(viewModel = viewModel) },
+        floatingActionButton = { BottomButton(viewModel = viewModel)
+
+                               },
         floatingActionButtonPosition = FabPosition.End
     ) { paddingValues ->
         Box(
@@ -93,7 +96,7 @@ fun HomeScreen(
                             bottomEnd = 20.dp,
                         )
                     ) {
-                        GetCurrentStatusAnimation()
+                        GetCurrentStatusAnimation(viewModel)
                     }
                     Box(
                         modifier = modifier
@@ -129,12 +132,11 @@ fun HomeScreen(
 }
 
 @Composable
-fun GetCurrentStatusAnimation() {
-    val isSilent = true
-    if (isSilent) {
-        SilentAnimation()
-    } else {
-        SpeakerAnimation()
+fun GetCurrentStatusAnimation(viewModel: MainViewModel) {
+    when(viewModel.currentMode){
+        AudioMode.DND -> SilentAnimation()
+        AudioMode.NORMAL -> SpeakerAnimation()
+        else -> {}
     }
 }
 
@@ -293,7 +295,9 @@ fun BottomButton(
     viewModel: MainViewModel,
 ) {
     FilledTonalIconButton(
-        onClick = { viewModel.openDialogStatus() },
+        onClick = { viewModel.openDialogStatus()
+                  viewModel.setToNormalMode()
+                  },
         modifier = modifier
             .padding(horizontal = 10.dp)
             .size(50.dp),

@@ -6,6 +6,12 @@ enum class TimePeriod(val value: String) {
     PM("pm")
 }
 
+enum class AudioMode(){
+    DND,
+    VIBRATE,
+    NORMAL
+}
+
 data class Time(
     val hours: Int,
     val minutes: Int,
