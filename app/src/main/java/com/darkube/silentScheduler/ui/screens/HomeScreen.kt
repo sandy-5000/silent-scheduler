@@ -52,6 +52,9 @@ import com.darkube.silentScheduler.types.Time
 import com.darkube.silentScheduler.types.TimePeriod
 import com.darkube.silentScheduler.types.TimeRange
 import com.darkube.silentScheduler.ui.components.NewSchedule
+import com.darkube.silentScheduler.ui.theme.backgroundColor
+import com.darkube.silentScheduler.ui.theme.secondaryColor
+import com.darkube.silentScheduler.utils.GetSoundMode
 import com.darkube.silentScheduler.viewmodels.MainViewModel
 
 @Composable
@@ -60,9 +63,9 @@ fun HomeScreen(
     viewModel: MainViewModel = MainViewModel(),
 ) {
     Scaffold(
-        floatingActionButton = { BottomButton(viewModel = viewModel)
-
-                               },
+        floatingActionButton = {
+            BottomButton(viewModel = viewModel)
+        },
         floatingActionButtonPosition = FabPosition.End
     ) { paddingValues ->
         Box(
@@ -87,7 +90,7 @@ fun HomeScreen(
                             .fillMaxWidth()
                             .height(150.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.background,
+                            containerColor = backgroundColor,
                         ),
                         shape = RoundedCornerShape(
                             topStart = 0.dp,
@@ -96,14 +99,14 @@ fun HomeScreen(
                             bottomEnd = 20.dp,
                         )
                     ) {
-                        GetCurrentStatusAnimation(viewModel)
+                        GetCurrentStatusAnimation(viewModel = viewModel)
                     }
                     Box(
                         modifier = modifier
                             .padding(12.dp)
                             .fillMaxSize()
                             .clip(shape = RoundedCornerShape(size = 20.dp))
-                            .background(color = MaterialTheme.colorScheme.background),
+                            .background(color = backgroundColor),
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.back_ground),
@@ -119,7 +122,7 @@ fun HomeScreen(
                                 .matchParentSize()
 
                         ) {
-                            SilenceSchedule()
+                            SilenceSchedule(viewModel = viewModel)
                             if (viewModel.openDialog) {
                                 NewSchedule(viewModel)
                             }
@@ -134,14 +137,14 @@ fun HomeScreen(
 @Composable
 fun GetCurrentStatusAnimation(viewModel: MainViewModel) {
     when(viewModel.currentMode){
-        AudioMode.DND -> SilentAnimation()
+        AudioMode.SILENT -> SilentAnimation()
         AudioMode.NORMAL -> SpeakerAnimation()
-        else -> {}
+        else -> SilentAnimation()
     }
 }
 
 @Composable
-fun SilenceSchedule() {
+fun SilenceSchedule(viewModel: MainViewModel) {
     val isLoading = false
     val schedules = mutableListOf(
         TimeRange(
@@ -176,6 +179,7 @@ fun SilenceSchedule() {
     if (isLoading) {
         LoadingAnimation()
     } else {
+        GetSoundMode(viewModel = viewModel)
         LazyColumn {
             itemsIndexed(schedules) { index, timeRange ->
                 GlassCard(
@@ -273,8 +277,8 @@ fun GlassCard(
                         .padding(end = 8.dp)
                         .size(35.dp),
                     colors = IconButtonDefaults.filledTonalIconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        contentColor = MaterialTheme.colorScheme.background
+                        containerColor = backgroundColor,
+                        contentColor = backgroundColor
                     ),
                     shape = RoundedCornerShape(size = 10.dp)
                 ) {
@@ -302,8 +306,8 @@ fun BottomButton(
             .padding(horizontal = 10.dp)
             .size(50.dp),
         colors = IconButtonDefaults.filledTonalIconButtonColors(
-            containerColor = MaterialTheme.colorScheme.secondary,
-            contentColor = MaterialTheme.colorScheme.background
+            containerColor = secondaryColor,
+            contentColor = backgroundColor
         ),
     ) {
         Icon(

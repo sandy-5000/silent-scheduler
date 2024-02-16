@@ -6,9 +6,8 @@ enum class TimePeriod(val value: String) {
     PM("pm")
 }
 
-enum class AudioMode(){
-    DND,
-    VIBRATE,
+enum class AudioMode() {
+    SILENT,
     NORMAL
 }
 

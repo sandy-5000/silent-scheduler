@@ -14,7 +14,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TimePicker
@@ -38,6 +37,9 @@ import com.darkube.silentScheduler.types.Time
 import com.darkube.silentScheduler.types.Time24
 import com.darkube.silentScheduler.types.TimePeriod
 import com.darkube.silentScheduler.types.TimeRange
+import com.darkube.silentScheduler.ui.theme.backgroundColor
+import com.darkube.silentScheduler.ui.theme.secondaryColor
+import com.darkube.silentScheduler.ui.theme.tertiaryColor
 import com.darkube.silentScheduler.viewmodels.MainViewModel
 
 
@@ -76,7 +78,7 @@ fun NewSchedule(
             modifier = modifier
                 .fillMaxSize()
                 .background(
-                    color = MaterialTheme.colorScheme.background.copy(alpha = 0.5f),
+                    color = backgroundColor.copy(alpha = 0.5f),
                     shape = RoundedCornerShape(size = 20.dp)
                 )
                 .padding(all = 16.dp)
@@ -111,13 +113,13 @@ fun NewSchedule(
                                 startTimeChange = false
                             },
                             colors = ButtonDefaults.textButtonColors(
-                                containerColor = MaterialTheme.colorScheme.tertiary,
+                                containerColor = tertiaryColor,
                             ),
                             shape = RoundedCornerShape(size = 10.dp),
                         ) {
                             Text(
                                 text = "Change",
-                                color = MaterialTheme.colorScheme.background,
+                                color = backgroundColor,
                             )
                         }
                     } else {
@@ -140,13 +142,13 @@ fun NewSchedule(
                                 startTimeChange = true
                             },
                             colors = ButtonDefaults.textButtonColors(
-                                containerColor = MaterialTheme.colorScheme.secondary,
+                                containerColor = secondaryColor,
                             ),
                             shape = RoundedCornerShape(size = 10.dp),
                         ) {
                             Text(
                                 text = "Confirm",
-                                color = MaterialTheme.colorScheme.background,
+                                color = backgroundColor,
                             )
                         }
                     }
@@ -173,13 +175,13 @@ fun NewSchedule(
                                 endTimeChange = false
                             },
                             colors = ButtonDefaults.textButtonColors(
-                                containerColor = MaterialTheme.colorScheme.tertiary,
+                                containerColor = tertiaryColor,
                             ),
                             shape = RoundedCornerShape(size = 10.dp),
                         ) {
                             Text(
                                 text = "Change",
-                                color = MaterialTheme.colorScheme.background,
+                                color = backgroundColor,
                             )
                         }
                     } else {
@@ -202,13 +204,13 @@ fun NewSchedule(
                                 endTimeChange = true
                             },
                             colors = ButtonDefaults.textButtonColors(
-                                containerColor = MaterialTheme.colorScheme.secondary,
+                                containerColor = secondaryColor,
                             ),
                             shape = RoundedCornerShape(size = 10.dp),
                         ) {
                             Text(
                                 text = "Confirm",
-                                color = MaterialTheme.colorScheme.background,
+                                color = backgroundColor,
                             )
                         }
                     }
@@ -230,13 +232,13 @@ fun NewSchedule(
                         viewModel.closeDialogStatus()
                     },
                     colors = ButtonDefaults.textButtonColors(
-                        containerColor = MaterialTheme.colorScheme.tertiary,
+                        containerColor = tertiaryColor,
                     ),
                     shape = RoundedCornerShape(size = 10.dp),
                 ) {
                     Text(
                         text = "Save",
-                        color = MaterialTheme.colorScheme.background,
+                        color = backgroundColor,
                     )
                 }
                 Button(
@@ -270,7 +272,7 @@ fun TimeInput(
         colors = TimePickerDefaults.colors(
             clockDialColor = Color(0xFF1e293b),
             clockDialUnselectedContentColor = Color.White,
-            clockDialSelectedContentColor = MaterialTheme.colorScheme.background,
+            clockDialSelectedContentColor = backgroundColor,
             selectorColor = Color.White,
             periodSelectorUnselectedContentColor = Color.White,
             periodSelectorSelectedContainerColor = Color(0xFFbfdbfe),
