@@ -1,5 +1,7 @@
 package com.darkube.silentScheduler.ui.screens
 
+import android.content.Context
+import android.media.AudioManager
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +26,6 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -54,17 +55,19 @@ import com.darkube.silentScheduler.types.TimeRange
 import com.darkube.silentScheduler.ui.components.NewSchedule
 import com.darkube.silentScheduler.ui.theme.backgroundColor
 import com.darkube.silentScheduler.ui.theme.secondaryColor
-import com.darkube.silentScheduler.utils.GetSoundMode
+import com.darkube.silentScheduler.utils.getSoundMode
+import com.darkube.silentScheduler.utils.setSoundMode
 import com.darkube.silentScheduler.viewmodels.MainViewModel
 
 @Composable
 fun HomeScreen(
+    context: Context,
     modifier: Modifier = Modifier,
     viewModel: MainViewModel = MainViewModel(),
 ) {
     Scaffold(
         floatingActionButton = {
-            BottomButton(viewModel = viewModel)
+            BottomButton(context = context, viewModel = viewModel)
         },
         floatingActionButtonPosition = FabPosition.End
     ) { paddingValues ->
@@ -139,7 +142,6 @@ fun GetCurrentStatusAnimation(viewModel: MainViewModel) {
     when(viewModel.currentMode){
         AudioMode.SILENT -> SilentAnimation()
         AudioMode.NORMAL -> SpeakerAnimation()
-        else -> SilentAnimation()
     }
 }
 
@@ -179,7 +181,6 @@ fun SilenceSchedule(viewModel: MainViewModel) {
     if (isLoading) {
         LoadingAnimation()
     } else {
-        GetSoundMode(viewModel = viewModel)
         LazyColumn {
             itemsIndexed(schedules) { index, timeRange ->
                 GlassCard(
@@ -295,13 +296,31 @@ fun GlassCard(
 
 @Composable
 fun BottomButton(
+    context: Context,
     modifier: Modifier = Modifier,
     viewModel: MainViewModel,
 ) {
     FilledTonalIconButton(
-        onClick = { viewModel.openDialogStatus()
-                  viewModel.setToNormalMode()
-                  },
+        onClick = {
+            viewModel.openDialogStatus()
+            var audioMode = AudioManager.RINGER_MODE_NORMAL
+            when (getSoundMode(context = context, viewModel = viewModel)) {
+                AudioManager.RINGER_MODE_NORMAL -> {
+                    audioMode = AudioManager.RINGER_MODE_SILENT
+                }
+                AudioManager.RINGER_MODE_SILENT -> {
+                    audioMode = AudioManager.RINGER_MODE_VIBRATE
+                }
+                AudioManager.RINGER_MODE_VIBRATE -> {
+                    audioMode = AudioManager.RINGER_MODE_NORMAL
+                }
+            }
+            setSoundMode(
+                context = context,
+                viewModel = viewModel,
+                audioMode = audioMode,
+            )
+        },
         modifier = modifier
             .padding(horizontal = 10.dp)
             .size(50.dp),
