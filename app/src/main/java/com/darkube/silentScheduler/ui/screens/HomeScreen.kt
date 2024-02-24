@@ -26,6 +26,7 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -53,8 +54,7 @@ import com.darkube.silentScheduler.types.Time
 import com.darkube.silentScheduler.types.TimePeriod
 import com.darkube.silentScheduler.types.TimeRange
 import com.darkube.silentScheduler.ui.components.NewSchedule
-import com.darkube.silentScheduler.ui.theme.backgroundColor
-import com.darkube.silentScheduler.ui.theme.secondaryColor
+import com.darkube.silentScheduler.utils.RingerMonitor
 import com.darkube.silentScheduler.utils.getSoundMode
 import com.darkube.silentScheduler.utils.setSoundMode
 import com.darkube.silentScheduler.viewmodels.MainViewModel
@@ -93,7 +93,7 @@ fun HomeScreen(
                             .fillMaxWidth()
                             .height(150.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = backgroundColor,
+                            containerColor = MaterialTheme.colorScheme.background,
                         ),
                         shape = RoundedCornerShape(
                             topStart = 0.dp,
@@ -102,6 +102,7 @@ fun HomeScreen(
                             bottomEnd = 20.dp,
                         )
                     ) {
+                        RingerMonitor(context = context, viewModel = viewModel)
                         GetCurrentStatusAnimation(viewModel = viewModel)
                     }
                     Box(
@@ -109,7 +110,7 @@ fun HomeScreen(
                             .padding(12.dp)
                             .fillMaxSize()
                             .clip(shape = RoundedCornerShape(size = 20.dp))
-                            .background(color = backgroundColor),
+                            .background(color = MaterialTheme.colorScheme.background),
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.back_ground),
@@ -278,8 +279,8 @@ fun GlassCard(
                         .padding(end = 8.dp)
                         .size(35.dp),
                     colors = IconButtonDefaults.filledTonalIconButtonColors(
-                        containerColor = backgroundColor,
-                        contentColor = backgroundColor
+                        containerColor = MaterialTheme.colorScheme.background,
+                        contentColor = MaterialTheme.colorScheme.background
                     ),
                     shape = RoundedCornerShape(size = 10.dp)
                 ) {
@@ -325,8 +326,8 @@ fun BottomButton(
             .padding(horizontal = 10.dp)
             .size(50.dp),
         colors = IconButtonDefaults.filledTonalIconButtonColors(
-            containerColor = secondaryColor,
-            contentColor = backgroundColor
+            containerColor = MaterialTheme.colorScheme.secondary,
+            contentColor = MaterialTheme.colorScheme.background
         ),
     ) {
         Icon(
