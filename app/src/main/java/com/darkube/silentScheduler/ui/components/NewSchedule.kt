@@ -35,8 +35,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.darkube.silentScheduler.types.Time
-import com.darkube.silentScheduler.types.Time24
-import com.darkube.silentScheduler.types.TimePeriod
 import com.darkube.silentScheduler.types.TimeRange
 import com.darkube.silentScheduler.viewmodels.MainViewModel
 
@@ -60,8 +58,8 @@ fun NewSchedule(
     val timeRange by remember {
         mutableStateOf(
             TimeRange(
-                start = Time(hours = 9, minutes = 0, period = TimePeriod.AM),
-                end = Time(hours = 9, minutes = 30, period = TimePeriod.AM),
+                start = Time(hours = 9, minutes = 0),
+                end = Time(hours = 9, minutes = 30),
             )
         )
     }
@@ -123,7 +121,7 @@ fun NewSchedule(
                     } else {
                         Text(
                             text = "Start Time : ${
-                                Time24(
+                                Time(
                                     hours = timeState.hour,
                                     minutes = timeState.minute,
                                 )
@@ -133,10 +131,10 @@ fun NewSchedule(
                         )
                         Button(
                             onClick = {
-                                timeRange.start = Time24(
+                                timeRange.start = Time(
                                     hours = timeState.hour,
                                     minutes = timeState.minute,
-                                ).get12Hours()
+                                )
                                 startTimeChange = true
                             },
                             colors = ButtonDefaults.textButtonColors(
@@ -185,7 +183,7 @@ fun NewSchedule(
                     } else {
                         Text(
                             text = "End Time   : ${
-                                Time24(
+                                Time(
                                     hours = timeState.hour,
                                     minutes = timeState.minute,
                                 )
@@ -195,10 +193,10 @@ fun NewSchedule(
                         )
                         Button(
                             onClick = {
-                                timeRange.end = Time24(
+                                timeRange.end = Time(
                                     hours = timeState.hour,
                                     minutes = timeState.minute,
-                                ).get12Hours()
+                                )
                                 endTimeChange = true
                             },
                             colors = ButtonDefaults.textButtonColors(
@@ -221,26 +219,6 @@ fun NewSchedule(
             ) {
                 Button(
                     onClick = {
-                        if (!startTimeChange || !endTimeChange) {
-                            return@Button
-                        }
-                        if (!timeRange.isValid()) {
-                            return@Button
-                        }
-                        viewModel.closeDialogStatus()
-                    },
-                    colors = ButtonDefaults.textButtonColors(
-                        containerColor = MaterialTheme.colorScheme.tertiary,
-                    ),
-                    shape = RoundedCornerShape(size = 10.dp),
-                ) {
-                    Text(
-                        text = "Save",
-                        color = MaterialTheme.colorScheme.background,
-                    )
-                }
-                Button(
-                    onClick = {
                         viewModel.closeDialogStatus()
                     },
                     colors = ButtonDefaults.textButtonColors(
@@ -251,6 +229,27 @@ fun NewSchedule(
                     Text(
                         text = "Close",
                         color = Color.White,
+                    )
+                }
+                Button(
+                    onClick = {
+                        if (!startTimeChange || !endTimeChange) {
+                            return@Button
+                        }
+                        if (!timeRange.isValid()) {
+                            return@Button
+                        }
+                        viewModel.addNewSchedule(timeRange)
+                        viewModel.closeDialogStatus()
+                    },
+                    colors = ButtonDefaults.textButtonColors(
+                        containerColor = MaterialTheme.colorScheme.tertiary,
+                    ),
+                    shape = RoundedCornerShape(size = 10.dp),
+                ) {
+                    Text(
+                        text = "Save",
+                        color = MaterialTheme.colorScheme.background,
                     )
                 }
             }

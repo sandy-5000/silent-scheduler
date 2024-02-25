@@ -149,44 +149,18 @@ fun GetCurrentStatusAnimation(viewModel: MainViewModel) {
 @Composable
 fun SilenceSchedule(viewModel: MainViewModel) {
     val isLoading = false
-    val schedules = mutableListOf(
-        TimeRange(
-            start = Time(hours = 9, minutes = 0, period = TimePeriod.AM),
-            end = Time(hours = 9, minutes = 30, period = TimePeriod.AM),
-        ),
-        TimeRange(
-            start = Time(hours = 10, minutes = 0, period = TimePeriod.AM),
-            end = Time(hours = 10, minutes = 30, period = TimePeriod.AM),
-        ),
-        TimeRange(
-            start = Time(hours = 11, minutes = 0, period = TimePeriod.AM),
-            end = Time(hours = 11, minutes = 45, period = TimePeriod.AM),
-        ),
-        TimeRange(
-            start = Time(hours = 12, minutes = 0, period = TimePeriod.AM),
-            end = Time(hours = 12, minutes = 40, period = TimePeriod.AM),
-        ),
-        TimeRange(
-            start = Time(hours = 2, minutes = 0, period = TimePeriod.PM),
-            end = Time(hours = 3, minutes = 35, period = TimePeriod.PM),
-        ),
-        TimeRange(
-            start = Time(hours = 4, minutes = 10, period = TimePeriod.PM),
-            end = Time(hours = 4, minutes = 35, period = TimePeriod.PM),
-        ),
-        TimeRange(
-            start = Time(hours = 5, minutes = 15, period = TimePeriod.PM),
-            end = Time(hours = 6, minutes = 0, period = TimePeriod.PM),
-        ),
-    )
+    val schedules = viewModel.schedules
     if (isLoading) {
         LoadingAnimation()
     } else {
         LazyColumn {
-            itemsIndexed(schedules) { index, timeRange ->
+            itemsIndexed(schedules.value) { index, timeRange ->
                 GlassCard(
                     topMargin = if (index == 0) 16.dp else 0.dp,
                     timeRange = timeRange,
+                    delete = {
+                        viewModel.removeSchedule(index = index)
+                    },
                 )
             }
         }
@@ -198,6 +172,7 @@ fun GlassCard(
     modifier: Modifier = Modifier,
     topMargin: Dp = 0.dp,
     timeRange: TimeRange,
+    delete: () -> Unit,
 ) {
     val ptSansFontFamily = FontFamily(
         Font(R.font.ptsans_regular, FontWeight.Normal),
@@ -274,7 +249,7 @@ fun GlassCard(
                     fontSize = 17.sp,
                 )
                 FilledTonalIconButton(
-                    onClick = { },
+                    onClick = delete,
                     modifier = modifier
                         .padding(end = 8.dp)
                         .size(35.dp),
@@ -304,23 +279,23 @@ fun BottomButton(
     FilledTonalIconButton(
         onClick = {
             viewModel.openDialogStatus()
-            var audioMode = AudioManager.RINGER_MODE_NORMAL
-            when (getSoundMode(context = context, viewModel = viewModel)) {
-                AudioManager.RINGER_MODE_NORMAL -> {
-                    audioMode = AudioManager.RINGER_MODE_SILENT
-                }
-                AudioManager.RINGER_MODE_SILENT -> {
-                    audioMode = AudioManager.RINGER_MODE_VIBRATE
-                }
-                AudioManager.RINGER_MODE_VIBRATE -> {
-                    audioMode = AudioManager.RINGER_MODE_NORMAL
-                }
-            }
-            setSoundMode(
-                context = context,
-                viewModel = viewModel,
-                audioMode = audioMode,
-            )
+//            var audioMode = AudioManager.RINGER_MODE_NORMAL
+//            when (getSoundMode(context = context, viewModel = viewModel)) {
+//                AudioManager.RINGER_MODE_NORMAL -> {
+//                    audioMode = AudioManager.RINGER_MODE_SILENT
+//                }
+//                AudioManager.RINGER_MODE_SILENT -> {
+//                    audioMode = AudioManager.RINGER_MODE_VIBRATE
+//                }
+//                AudioManager.RINGER_MODE_VIBRATE -> {
+//                    audioMode = AudioManager.RINGER_MODE_NORMAL
+//                }
+//            }
+//            setSoundMode(
+//                context = context,
+//                viewModel = viewModel,
+//                audioMode = audioMode,
+//            )
         },
         modifier = modifier
             .padding(horizontal = 10.dp)

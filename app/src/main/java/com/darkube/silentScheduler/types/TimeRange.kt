@@ -2,16 +2,14 @@ package com.darkube.silentScheduler.types
 
 
 enum class TimePeriod(val value: String) {
-    AM("am"),
-    PM("pm")
+    AM("am"), PM("pm")
 }
 
 enum class AudioMode() {
-    SILENT,
-    NORMAL
+    SILENT, NORMAL
 }
 
-data class Time(
+data class Time12(
     val hours: Int,
     val minutes: Int,
     val period: TimePeriod,
@@ -21,9 +19,23 @@ data class Time(
         val formattedMinutes = String.format("%02d", minutes)
         return "${formattedHours}:${formattedMinutes}${period.value}"
     }
+
+    fun get24Hours(): Time {
+        var hours24 = hours
+        if (period == TimePeriod.PM) {
+            if (hours24 != 12) {
+                hours24 += 12
+            }
+        } else {
+            if (hours24 == 12) {
+                hours24 = 0
+            }
+        }
+        return Time(hours = hours24, minutes = minutes)
+    }
 }
 
-data class Time24(
+data class Time(
     val hours: Int,
     val minutes: Int,
 ) {
@@ -37,13 +49,18 @@ data class Time24(
         val formattedMinutes = String.format("%02d", minutes)
         return "${formattedHours}:${formattedMinutes}${period.value}"
     }
-    fun get12Hours(): Time {
+
+    fun timeStamp(): Long {
+        return (60 * hours + minutes).toLong() * 60 * 1000
+    }
+
+    fun get12Hours(): Time12 {
         val period = (if (hours >= 12) TimePeriod.PM else TimePeriod.AM)
         var hours12 = hours - (if (hours > 12) 12 else 0)
         if (hours12 == 0) {
             hours12 = 12
         }
-        return Time(hours = hours12, minutes = minutes, period = period)
+        return Time12(hours = hours12, minutes = minutes, period = period)
     }
 }
 
@@ -54,11 +71,15 @@ data class TimeRange(
     override fun toString(): String {
         return "$start - $end"
     }
+
     private fun duration(): Int {
-        val startHours = start.hours + (if (start.period == TimePeriod.PM) 12 else 0)
-        val endHours = end.hours + (if (end.period == TimePeriod.PM) 12 else 0)
-        return (endHours - startHours) * 60 + (end.minutes - start.minutes)
+        return (end.hours - start.hours) * 60 + (end.minutes - start.minutes)
     }
+
+    fun overLaps(range: TimeRange): Boolean {
+        return (start.timeStamp() <= range.start.timeStamp() && range.start.timeStamp() <= end.timeStamp()) || (start.timeStamp() <= range.end.timeStamp() && range.end.timeStamp() <= end.timeStamp())
+    }
+
     fun durationToString(): String {
         val difference = duration()
         if (difference <= 0) {
@@ -71,6 +92,7 @@ data class TimeRange(
         }
         return "${hours}h${mints}m"
     }
+
     fun isValid(): Boolean {
         return duration() > 0
     }
