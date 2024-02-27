@@ -54,7 +54,7 @@ class MainViewModel : ViewModel() {
         _schedules.toList()
     }
 
-    fun addNewSchedule(timeRange: TimeRange) {
+    fun addNewSchedule(timeRange: TimeRange): Boolean {
         val overlappingSchedules = _schedules.filter { it.overLaps(timeRange) }
         if (overlappingSchedules.isEmpty()) {
             val index =
@@ -64,15 +64,19 @@ class MainViewModel : ViewModel() {
             } else {
                 _schedules.add(index, timeRange)
             }
+            return true
         }
+        return false
     }
 
-    fun removeSchedule(index: Int) {
+    fun removeSchedule(index: Int): Boolean {
         Log.d("delete-1", "$index")
         if (index in 0 until _schedules.size) {
             Log.d("delete-2", "$index")
             _schedules.removeAt(index)
+            return true
         }
+        return false
     }
 
     fun openDialogStatus() {

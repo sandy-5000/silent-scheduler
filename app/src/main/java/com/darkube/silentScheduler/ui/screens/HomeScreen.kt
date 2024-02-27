@@ -56,6 +56,7 @@ import com.darkube.silentScheduler.types.TimeRange
 import com.darkube.silentScheduler.ui.components.NewSchedule
 import com.darkube.silentScheduler.utils.RingerMonitor
 import com.darkube.silentScheduler.utils.getSoundMode
+import com.darkube.silentScheduler.utils.reScheduleWorks
 import com.darkube.silentScheduler.utils.setSoundMode
 import com.darkube.silentScheduler.viewmodels.MainViewModel
 
@@ -126,9 +127,9 @@ fun HomeScreen(
                                 .matchParentSize()
 
                         ) {
-                            SilenceSchedule(viewModel = viewModel)
+                            SilenceSchedule(context = context, viewModel = viewModel)
                             if (viewModel.openDialog) {
-                                NewSchedule(viewModel)
+                                NewSchedule(context = context, viewModel = viewModel)
                             }
                         }
                     }
@@ -147,7 +148,7 @@ fun GetCurrentStatusAnimation(viewModel: MainViewModel) {
 }
 
 @Composable
-fun SilenceSchedule(viewModel: MainViewModel) {
+fun SilenceSchedule(viewModel: MainViewModel, context: Context) {
     val isLoading = false
     val schedules = viewModel.schedules
     if (isLoading) {
@@ -159,7 +160,10 @@ fun SilenceSchedule(viewModel: MainViewModel) {
                     topMargin = if (index == 0) 16.dp else 0.dp,
                     timeRange = timeRange,
                     delete = {
-                        viewModel.removeSchedule(index = index)
+                        val result = viewModel.removeSchedule(index = index)
+                        if (result) {
+                            reScheduleWorks(context = context, ranges = viewModel.schedules.value)
+                        }
                     },
                 )
             }

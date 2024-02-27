@@ -1,5 +1,6 @@
 package com.darkube.silentScheduler.ui.components
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,12 +37,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.darkube.silentScheduler.types.Time
 import com.darkube.silentScheduler.types.TimeRange
+import com.darkube.silentScheduler.utils.reScheduleWorks
 import com.darkube.silentScheduler.viewmodels.MainViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewSchedule(
+    context: Context,
     viewModel: MainViewModel,
     modifier: Modifier = Modifier,
 ) {
@@ -239,7 +242,10 @@ fun NewSchedule(
                         if (!timeRange.isValid()) {
                             return@Button
                         }
-                        viewModel.addNewSchedule(timeRange)
+                        val result = viewModel.addNewSchedule(timeRange)
+                        if (result) {
+                            reScheduleWorks(context = context, ranges = viewModel.schedules.value)
+                        }
                         viewModel.closeDialogStatus()
                     },
                     colors = ButtonDefaults.textButtonColors(
