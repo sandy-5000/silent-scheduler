@@ -8,12 +8,18 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.darkube.silentScheduler.data.TimeRangeEntity
+import com.darkube.silentScheduler.data.TimeRangeEntityDao
 import com.darkube.silentScheduler.types.AudioMode
 import com.darkube.silentScheduler.types.Time
 import com.darkube.silentScheduler.types.TimeRange
+import kotlinx.coroutines.launch
 
 
-class MainViewModel : ViewModel() {
+class MainViewModel(
+    private val dao : TimeRangeEntityDao
+) : ViewModel() {
     var openDialog by mutableStateOf(false)
         private set
     var currentMode by mutableStateOf(AudioMode.SILENT)
@@ -94,5 +100,12 @@ class MainViewModel : ViewModel() {
     fun setToSilentMode() {
         currentMode = AudioMode.SILENT
     }
+
+    fun onDeleteTimeRangeEntity(timeRangeEntity: TimeRangeEntity){
+        viewModelScope.launch {
+            dao.deleteTimeRangeEntity(timeRangeEntity)
+        }
+    }
+
 }
 
