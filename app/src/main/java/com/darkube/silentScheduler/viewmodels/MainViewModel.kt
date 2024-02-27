@@ -17,9 +17,7 @@ import com.darkube.silentScheduler.types.TimeRange
 import kotlinx.coroutines.launch
 
 
-class MainViewModel(
-    private val dao : TimeRangeEntityDao
-) : ViewModel() {
+class MainViewModel : ViewModel() {
     var openDialog by mutableStateOf(false)
         private set
     var currentMode by mutableStateOf(AudioMode.SILENT)
@@ -101,11 +99,6 @@ class MainViewModel(
         currentMode = AudioMode.SILENT
     }
 
-    fun onDeleteTimeRangeEntity(timeRangeEntity: TimeRangeEntity){
-        viewModelScope.launch {
-            dao.deleteTimeRangeEntity(timeRangeEntity)
-        }
-    }
 
 }
 
