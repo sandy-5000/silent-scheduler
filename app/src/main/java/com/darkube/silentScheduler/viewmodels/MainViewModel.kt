@@ -7,6 +7,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import com.darkube.silentScheduler.types.AudioMode
 import com.darkube.silentScheduler.types.Time
@@ -77,6 +79,16 @@ class MainViewModel : ViewModel() {
             return true
         }
         return false
+    }
+
+    private fun serializeSchedules(): String {
+        return _schedules.joinToString(separator = ",") { it.serialize() }
+    }
+    private fun deSerializeSchedules(data: String): SnapshotStateList<TimeRange> {
+        val schedules = data.split(",").map {
+            TimeRange.deSerialize(it)
+        }.toMutableStateList()
+        return schedules
     }
 
     fun openDialogStatus() {

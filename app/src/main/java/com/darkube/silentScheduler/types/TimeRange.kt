@@ -54,6 +54,16 @@ data class Time(
         return (60 * hours + minutes).toLong() * 60 * 1000
     }
 
+    fun serialize(): String {
+        return "$hours|$minutes"
+    }
+    companion object {
+        fun deSerialize(data: String): Time {
+            val (hours, minutes) = data.split('|').let { (hours, minutes) -> Pair(hours.toInt(), minutes.toInt()) }
+            return Time(hours = hours, minutes = minutes)
+        }
+    }
+
     fun get12Hours(): Time12 {
         val period = (if (hours >= 12) TimePeriod.PM else TimePeriod.AM)
         var hours12 = hours - (if (hours > 12) 12 else 0)
@@ -93,6 +103,15 @@ data class TimeRange(
         return "${hours}h${mints}m"
     }
 
+    fun serialize(): String {
+        return "${start.serialize()}#${end.serialize()}"
+    }
+    companion object {
+        fun deSerialize(data: String): TimeRange {
+            val (start, end) = data.split('#').let { (start, end) -> Pair(Time.deSerialize(start), Time.deSerialize(end)) }
+            return TimeRange(start = start, end = end)
+        }
+    }
     fun isValid(): Boolean {
         return duration() > 0
     }
