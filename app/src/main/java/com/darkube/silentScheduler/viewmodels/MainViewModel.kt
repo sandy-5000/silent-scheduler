@@ -10,13 +10,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.darkube.silentScheduler.data.TimeRangeEntity
-import com.darkube.silentScheduler.data.TimeRangeEntityDao
 import com.darkube.silentScheduler.types.AudioMode
 import com.darkube.silentScheduler.types.Time
 import com.darkube.silentScheduler.types.TimeRange
-import kotlinx.coroutines.launch
 
 
 class MainViewModel : ViewModel() {
@@ -76,9 +72,7 @@ class MainViewModel : ViewModel() {
     }
 
     fun removeSchedule(index: Int): Boolean {
-        Log.d("delete-1", "$index")
         if (index in 0 until _schedules.size) {
-            Log.d("delete-2", "$index")
             _schedules.removeAt(index)
             return true
         }

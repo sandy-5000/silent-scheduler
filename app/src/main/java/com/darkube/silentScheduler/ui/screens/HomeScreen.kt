@@ -2,6 +2,13 @@ package com.darkube.silentScheduler.ui.screens
 
 import android.content.Context
 import android.media.AudioManager
+import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +37,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -59,6 +72,7 @@ import com.darkube.silentScheduler.utils.getSoundMode
 import com.darkube.silentScheduler.utils.reScheduleWorks
 import com.darkube.silentScheduler.utils.setSoundMode
 import com.darkube.silentScheduler.viewmodels.MainViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun HomeScreen(
@@ -68,7 +82,7 @@ fun HomeScreen(
 ) {
     Scaffold(
         floatingActionButton = {
-            BottomButton(context = context, viewModel = viewModel)
+            BottomButton(viewModel = viewModel)
         },
         floatingActionButtonPosition = FabPosition.End
     ) { paddingValues ->
@@ -141,7 +155,7 @@ fun HomeScreen(
 
 @Composable
 fun GetCurrentStatusAnimation(viewModel: MainViewModel) {
-    when(viewModel.currentMode){
+    when (viewModel.currentMode) {
         AudioMode.SILENT -> SilentAnimation()
         AudioMode.NORMAL -> SpeakerAnimation()
     }
@@ -151,6 +165,11 @@ fun GetCurrentStatusAnimation(viewModel: MainViewModel) {
 fun SilenceSchedule(viewModel: MainViewModel, context: Context) {
     val isLoading = false
     val schedules = viewModel.schedules
+    Log.d("fuck-values", schedules.value.toString())
+    var _bools = List(schedules.value.size,true)
+//    val bools by remember {
+//        mutableStateOf(List(schedules.value.size, true))
+//    }
     if (isLoading) {
         LoadingAnimation()
     } else {
@@ -181,93 +200,114 @@ fun GlassCard(
     val ptSansFontFamily = FontFamily(
         Font(R.font.ptsans_regular, FontWeight.Normal),
     )
-    Box(
-        modifier = modifier
-            .padding(top = topMargin, bottom = 16.dp)
-            .fillMaxWidth()
-            .height(160.dp)
-            .clip(shape = RoundedCornerShape(size = 20.dp))
+    val animationTime = 200
+    val easing = LinearEasing
+    var isVisible by remember {
+        mutableStateOf(true)
+    }
+    AnimatedVisibility(
+        visible = isVisible,
+        modifier = Modifier.fillMaxWidth(), // Adjust modifier as needed
+        enter = slideInHorizontally(
+            initialOffsetX = { it }, // Slide from right (positive value) or left (negative)
+            animationSpec = tween(durationMillis = animationTime, easing = easing)
+        ),
+        exit = slideOutHorizontally(
+            targetOffsetX = { -it }, // Slide to right (positive value) or left (negative)
+            animationSpec = tween(durationMillis = animationTime, easing = easing)
+        )
     ) {
         Box(
             modifier = modifier
-                .matchParentSize()
-                .background(
-                    brush = Brush.linearGradient(
-                        colors = listOf(
-                            Color(0xFFffffff).copy(alpha = 0.05f),
-                            Color(0xFFffffff).copy(alpha = 0.1f),
-                        )
-                    )
-                )
-                .blur(radius = 10.dp)
+                .padding(top = topMargin, bottom = 16.dp)
+                .fillMaxWidth()
+                .height(160.dp)
                 .clip(shape = RoundedCornerShape(size = 20.dp))
         ) {
-        }
-        Column(
-            modifier = modifier
-                .padding(horizontal = 12.dp, vertical = 16.dp)
-                .matchParentSize(),
-            verticalArrangement = Arrangement.SpaceBetween,
-        ) {
+            Box(
+                modifier = modifier
+                    .matchParentSize()
+                    .background(
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                Color(0xFFffffff).copy(alpha = 0.05f),
+                                Color(0xFFffffff).copy(alpha = 0.1f),
+                            )
+                        )
+                    )
+                    .blur(radius = 10.dp)
+                    .clip(shape = RoundedCornerShape(size = 20.dp))
+            ) {
+            }
             Column(
                 modifier = modifier
-                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 16.dp)
+                    .matchParentSize(),
+                verticalArrangement = Arrangement.SpaceBetween,
             ) {
-                Text(
-                    text = "Scheduled",
-                    color = Color.White,
-                    fontFamily = ptSansFontFamily,
-                    fontSize = 17.sp,
-                )
-                Spacer(modifier = modifier.height(10.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
+                Column(
+                    modifier = modifier
+                        .fillMaxWidth()
                 ) {
-                    Icon(
-                        painterResource(id = R.drawable.sound_off),
-                        contentDescription = "Time Symbol",
-                        tint = Color.White,
-                        modifier = modifier
-                            .height(15.dp)
-                    )
-                    Spacer(modifier = modifier.width(4.dp))
                     Text(
-                        text = "Time: $timeRange",
+                        text = "Scheduled",
                         color = Color.White,
                         fontFamily = ptSansFontFamily,
-                        fontSize = 15.sp,
+                        fontSize = 17.sp,
                     )
+                    Spacer(modifier = modifier.height(10.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            painterResource(id = R.drawable.sound_off),
+                            contentDescription = "Time Symbol",
+                            tint = Color.White,
+                            modifier = modifier
+                                .height(15.dp)
+                        )
+                        Spacer(modifier = modifier.width(4.dp))
+                        Text(
+                            text = "Time: $timeRange",
+                            color = Color.White,
+                            fontFamily = ptSansFontFamily,
+                            fontSize = 15.sp,
+                        )
+                    }
                 }
-            }
-            Row(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 5.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
-                Text(
-                    text = "Duration: ${timeRange.durationToString()}",
-                    color = Color.White,
-                    fontFamily = ptSansFontFamily,
-                    fontSize = 17.sp,
-                )
-                FilledTonalIconButton(
-                    onClick = delete,
+                Row(
                     modifier = modifier
-                        .padding(end = 8.dp)
-                        .size(35.dp),
-                    colors = IconButtonDefaults.filledTonalIconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.background,
-                        contentColor = MaterialTheme.colorScheme.background
-                    ),
-                    shape = RoundedCornerShape(size = 10.dp)
+                        .fillMaxWidth()
+                        .padding(bottom = 5.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    Icon(
-                        painterResource(id = R.drawable.trash_bin),
-                        contentDescription = "Time Symbol",
-                        tint = Color.White,
+                    Text(
+                        text = "Duration: ${timeRange.durationToString()}",
+                        color = Color.White,
+                        fontFamily = ptSansFontFamily,
+                        fontSize = 17.sp,
                     )
+                    FilledTonalIconButton(
+                        onClick = {
+                            isVisible = false
+                            delete()
+                        },
+                        modifier = modifier
+                            .padding(end = 8.dp)
+                            .size(35.dp),
+                        colors = IconButtonDefaults.filledTonalIconButtonColors(
+                            containerColor = MaterialTheme.colorScheme.background,
+                            contentColor = MaterialTheme.colorScheme.background
+                        ),
+                        shape = RoundedCornerShape(size = 10.dp)
+                    ) {
+                        Icon(
+                            painterResource(id = R.drawable.trash_bin),
+                            contentDescription = "Time Symbol",
+                            tint = Color.White,
+                        )
+                    }
                 }
             }
         }
@@ -276,30 +316,12 @@ fun GlassCard(
 
 @Composable
 fun BottomButton(
-    context: Context,
     modifier: Modifier = Modifier,
     viewModel: MainViewModel,
 ) {
     FilledTonalIconButton(
         onClick = {
             viewModel.openDialogStatus()
-//            var audioMode = AudioManager.RINGER_MODE_NORMAL
-//            when (getSoundMode(context = context, viewModel = viewModel)) {
-//                AudioManager.RINGER_MODE_NORMAL -> {
-//                    audioMode = AudioManager.RINGER_MODE_SILENT
-//                }
-//                AudioManager.RINGER_MODE_SILENT -> {
-//                    audioMode = AudioManager.RINGER_MODE_VIBRATE
-//                }
-//                AudioManager.RINGER_MODE_VIBRATE -> {
-//                    audioMode = AudioManager.RINGER_MODE_NORMAL
-//                }
-//            }
-//            setSoundMode(
-//                context = context,
-//                viewModel = viewModel,
-//                audioMode = audioMode,
-//            )
         },
         modifier = modifier
             .padding(horizontal = 10.dp)
